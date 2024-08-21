@@ -10,7 +10,7 @@ const OrdenSummary = ({ products }: Props) => {
     <>
       <div className='border rounded-lg border-neutral-400 p-6'>
         <h2 className='text-2xl font-bold'>Order Summary</h2>
-        <h5 className='text-lg pt-3'>3 Items</h5>
+        <h5 className='text-lg pt-3'>{products.length} Items</h5>
         <ul className='list-none pt-10 text-lg'>
           {products.map((product) => (
             <li className='flex justify-between pb-3'>

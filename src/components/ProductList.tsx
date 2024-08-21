@@ -1,7 +1,6 @@
 import { Game } from '@/utils/endpoint';
 import React from 'react';
 import Image from 'next/image';
-import useLocalStorage from '@/services/useLocalStorage';
 
 interface Props {
   products: Game[];
@@ -18,7 +17,7 @@ const ProductList = ({ products, handleProductsCart, isInCart, displayType }: Pr
             <article className='flex flex-col justify-between border border-neutral-400 rounded-xl p-6' key={product.id}>
               <div>
                 <div className='relative h-60'>
-                  {product.isNew && <div className='absolute float-left py-1 px-2 m-3 text-sm rounded bg-stone-100 text-neutral-700 z-40'>New</div>}
+                  {product.isNew && <div className='relative float-left py-1 px-2 m-3 text-sm rounded bg-stone-100 text-neutral-700 z-40'>New</div>}
                   <Image className='rounded-t-xl z-10' src={product.image} alt={product.name} fill={true}></Image>
                 </div>
                 <h3 className='font-bold text-neutral-500 uppercase text-base mt-3'>{product.genre}</h3>
@@ -41,9 +40,9 @@ const ProductList = ({ products, handleProductsCart, isInCart, displayType }: Pr
           {products.map((product, index) => (
             <div key={product.id}>
               <article className='flex flex-row justify-between p-6'>
-                <div className='flex flex-row flex-grow'>
-                  <div className='relative min-w-64 h-[156px] mr-8'>
-                    {product.isNew && <div className='absolute float-left py-1 px-2 m-3 text-sm rounded bg-stone-100 text-neutral-700 z-40'>New</div>}
+                <div className='flex flex-col lg:flex-row flex-grow'>
+                  <div className='relative min-w-32 md:min-w-44 lg:min-w-64 h-[156px] mr-4 lg:mr-8'>
+                    {product.isNew && <div className='relative float-left py-1 px-2 m-3 text-sm rounded bg-stone-100 text-neutral-700 z-40'>New</div>}
                     <Image className='z-10' src={product.image} alt={product.name} fill={true}></Image>
                   </div>
                   <div className='flex justify-between flex-grow'>
@@ -56,7 +55,7 @@ const ProductList = ({ products, handleProductsCart, isInCart, displayType }: Pr
                   </div>
                 </div>
                 <button onClick={() => handleProductsCart(product)} className='self-start text-zync-600'>
-                  x
+                  <Image src={'/delete-icon.svg'} alt='Delete icon' height={30} width={30}></Image>
                 </button>
               </article>
               {products.length > index + 1 && <hr className='border-t border-neutral-400' />}
