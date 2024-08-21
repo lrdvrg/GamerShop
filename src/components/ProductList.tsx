@@ -39,8 +39,8 @@ const ProductList = ({ products, handleProductsCart, isInCart, displayType }: Pr
       ) : (
         <div className='grid grid-cols-1 gap-5'>
           {products.map((product, index) => (
-            <div>
-              <article className='flex flex-row justify-between p-6' key={product.id}>
+            <div key={product.id}>
+              <article className='flex flex-row justify-between p-6'>
                 <div className='flex flex-row flex-grow'>
                   <div className='relative min-w-64 h-[156px] mr-8'>
                     {product.isNew && <div className='absolute float-left py-1 px-2 m-3 text-sm rounded bg-stone-100 text-neutral-700 z-40'>New</div>}
