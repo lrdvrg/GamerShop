@@ -4,7 +4,7 @@ import ProductList from '@/components/ProductList';
 import useLocalStorage from '@/services/useLocalStorage';
 import { availableFilters, Game } from '@/utils/endpoint';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { fetchGames } from './api/fetchGames';
 
 export default function Home() {
@@ -18,18 +18,31 @@ export default function Home() {
   const [actualPage, setActualPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
   const [localStorageProducts, setLocalStorageProducts] = useLocalStorage('products', []);
 
+  const previousSelectedFilter = useRef<string>();
+  const previousActualPage = useRef<number>();
+
   useEffect(() => {
+    setIsLoading(true);
     const loadData = async () => {
       setIsError(false);
       try {
         const response = await fetchGames(actualPage, selectedFilter);
-        setProducts([...products, ...response.games]);
-        setTotalPages(response.totalPages);
+
+        if (previousSelectedFilter.current !== selectedFilter) {
+          setProducts([...response.games]);
+          setTotalPages(response.totalPages);
+        } else {
+          setProducts([...products, ...response.games]);
+          setTotalPages(response.totalPages);
+        }
+
+        previousSelectedFilter.current = selectedFilter;
+        previousActualPage.current = actualPage;
       } catch (error) {
         setIsLoading(false);
         setIsError(true);
@@ -75,7 +88,7 @@ export default function Home() {
             <div className='flex justify-end pt-12'>
               <h3 className='font-bold'>GENRE</h3> <span className='px-4'>|</span>
               <div className='pl-2'>
-                <Filter defaultFilter={defaultFilter} updateFilter={setSelectedFilter} selectOptions={availableFilters}></Filter>
+                <Filter defaultFilter={defaultFilter} updateFilter={setSelectedFilter} updatePage={setActualPage} selectOptions={availableFilters}></Filter>
               </div>
             </div>
           </div>
