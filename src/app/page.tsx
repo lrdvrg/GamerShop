@@ -19,6 +19,7 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   const [localStorageProducts, setLocalStorageProducts] = useLocalStorage('products', []);
 
@@ -29,7 +30,11 @@ export default function Home() {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    setIsLoading(true);
+    if (products.length === 0) {
+      setIsLoading(true);
+    } else {
+      setIsButtonLoading(true);
+    }
 
     const loadData = async () => {
       try {
@@ -48,11 +53,13 @@ export default function Home() {
         previousActualPage.current = actualPage;
       } catch (error) {
         setIsLoading(false);
+        setIsButtonLoading(false);
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error(error);
         }
       } finally {
         if (!signal.aborted) {
+          setIsButtonLoading(false);
           setIsLoading(false);
         }
       }
@@ -91,9 +98,9 @@ export default function Home() {
           <hr className='border-t border-gray-100' />
           <div className='px-5 lg:px-32 py-12'>
             <ProductList products={products} displayType='grid' localStorageProducts={localStorageProducts} setLocalStorageProducts={setLocalStorageProducts}></ProductList>
-            {actualPage < totalPages && (
+            {(actualPage < totalPages || isButtonLoading) && (
               <button onClick={seeMorePages} className='bg-zinc-600 hover:bg-zinc-700 font-bold rounded-md text-white px-6 py-4 mt-12'>
-                SEE MORE
+                {!isButtonLoading ? 'SEE MORE' : <div className='h-4 w-4 animate-spin rounded-full border-b-2 border-white' />}
               </button>
             )}
           </div>
