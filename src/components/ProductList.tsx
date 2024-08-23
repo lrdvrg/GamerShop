@@ -1,19 +1,19 @@
+import { handleProductsCart, isInCart } from '@/utils/cart';
 import { Game } from '@/utils/endpoint';
-import React from 'react';
 import Image from 'next/image';
 
 interface Props {
   products: Game[];
+  localStorageProducts: Game[];
   displayType?: 'grid' | 'list';
-  handleProductsCart: (product: Game) => void;
-  isInCart: (productId: string) => boolean;
+  setLocalStorageProducts: any;
 }
-const ProductList = ({ products, handleProductsCart, isInCart, displayType }: Props) => {
+const ProductList = ({ products, localStorageProducts, displayType, setLocalStorageProducts }: Props) => {
   return (
     <>
       {displayType === 'grid' ? (
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'>
-          {products.map((product) => (
+          {products?.map((product) => (
             <article className='flex flex-col justify-between border border-neutral-400 rounded-xl p-6' key={product.id}>
               <div>
                 <div className='relative h-60'>
@@ -27,17 +27,20 @@ const ProductList = ({ products, handleProductsCart, isInCart, displayType }: Pr
                 </p>
               </div>
               <button
-                onClick={() => handleProductsCart(product)}
-                className={'w-full border font-bold rounded-md p-4 ' + (isInCart(product.id) ? 'bg-zinc-600 hover:bg-zinc-700 text-white ' : 'hover:bg-zinc-100 border-neutral-700 text-neutral-700 ')}
+                onClick={() => handleProductsCart(product, localStorageProducts, setLocalStorageProducts)}
+                className={
+                  'w-full border font-bold rounded-md p-4 ' +
+                  (isInCart(localStorageProducts, product.id) ? 'bg-zinc-600 hover:bg-zinc-700 text-white ' : 'hover:bg-zinc-100 border-neutral-700 text-neutral-700 ')
+                }
               >
-                {isInCart(product.id) ? 'REMOVE' : 'ADD TO CART'}
+                {isInCart(localStorageProducts, product.id) ? 'REMOVE' : 'ADD TO CART'}
               </button>
             </article>
           ))}
         </div>
       ) : (
         <div className='grid grid-cols-1 gap-5'>
-          {products.map((product, index) => (
+          {products?.map((product, index) => (
             <div key={product.id}>
               <article className='flex flex-row justify-between p-6'>
                 <div className='flex flex-col lg:flex-row flex-grow'>
@@ -54,11 +57,11 @@ const ProductList = ({ products, handleProductsCart, isInCart, displayType }: Pr
                     <span className='font-bold text-lg text-neutral-700 content-end'>${product.price}</span>
                   </div>
                 </div>
-                <button onClick={() => handleProductsCart(product)} className='self-start text-zync-600'>
+                <button onClick={() => handleProductsCart(product, localStorageProducts, setLocalStorageProducts)} className='self-start text-zync-600'>
                   <Image src={'/delete-icon.svg'} alt='Delete icon' height={30} width={30}></Image>
                 </button>
               </article>
-              {products.length > index + 1 && <hr className='border-t border-neutral-400' />}
+              {products?.length > index + 1 && <hr className='border-t border-neutral-400' />}
             </div>
           ))}
         </div>
