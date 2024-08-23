@@ -18,7 +18,7 @@ export default function Home() {
   const [actualPage, setActualPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [localStorageProducts, setLocalStorageProducts] = useLocalStorage('products', []);
 
@@ -26,32 +26,45 @@ export default function Home() {
   const previousActualPage = useRef<number>();
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     setIsLoading(true);
+
     const loadData = async () => {
       try {
-        const response = await fetchGames(actualPage, selectedFilter);
+        const response = await fetchGames(actualPage, selectedFilter, signal);
 
-        if (previousSelectedFilter.current !== selectedFilter) {
-          setProducts([...response.games]);
-          setTotalPages(response.totalPages);
-        } else {
-          setProducts([...products, ...response.games]);
-          setTotalPages(response.totalPages);
+        if (!signal.aborted) {
+          if (previousSelectedFilter.current !== selectedFilter) {
+            setProducts([...response.games]);
+            setTotalPages(response.totalPages);
+          } else {
+            setProducts((prevProducts) => [...prevProducts, ...response.games]);
+            setTotalPages(response.totalPages);
+          }
         }
-
         previousSelectedFilter.current = selectedFilter;
         previousActualPage.current = actualPage;
       } catch (error) {
         setIsLoading(false);
-        console.error(error);
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error(error);
+        }
       } finally {
-        setIsLoading(false);
+        if (!signal.aborted) {
+          setIsLoading(false);
+        }
       }
     };
 
     if (selectedFilter || actualPage) {
       loadData();
     }
+
+    return () => {
+      controller.abort();
+    };
   }, [selectedFilter, actualPage]);
 
   const seeMorePages = () => {
