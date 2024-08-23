@@ -98,7 +98,7 @@ export default function Home() {
           <hr className='border-t border-gray-100' />
           <div className='px-5 lg:px-32 py-12'>
             <ProductList products={products} displayType='grid' localStorageProducts={localStorageProducts} setLocalStorageProducts={setLocalStorageProducts}></ProductList>
-            {(actualPage < totalPages || isButtonLoading) && (
+            {(isButtonLoading || actualPage < totalPages) && (
               <button onClick={seeMorePages} className='bg-zinc-600 hover:bg-zinc-700 font-bold rounded-md text-white px-6 py-4 mt-12'>
                 {!isButtonLoading ? 'SEE MORE' : <div className='h-4 w-4 animate-spin rounded-full border-b-2 border-white' />}
               </button>
