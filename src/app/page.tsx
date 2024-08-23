@@ -5,7 +5,7 @@ import useLocalStorage from '@/services/useLocalStorage';
 import { availableFilters, Game } from '@/utils/endpoint';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { fetchGames } from './api/fetchGames';
+import { fetchGames } from '../services/fetchGames';
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -19,7 +19,6 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(1);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
 
   const [localStorageProducts, setLocalStorageProducts] = useLocalStorage('products', []);
 
@@ -29,7 +28,6 @@ export default function Home() {
   useEffect(() => {
     setIsLoading(true);
     const loadData = async () => {
-      setIsError(false);
       try {
         const response = await fetchGames(actualPage, selectedFilter);
 
@@ -45,7 +43,6 @@ export default function Home() {
         previousActualPage.current = actualPage;
       } catch (error) {
         setIsLoading(false);
-        setIsError(true);
         console.error(error);
       } finally {
         setIsLoading(false);
@@ -61,20 +58,6 @@ export default function Home() {
     setActualPage(actualPage + 1);
   };
 
-  const handleProductsCart = (product: Game) => {
-    if (isInCart(product.id)) {
-      const newLocalStorageProducts = (localStorageProducts as Game[]).filter((localStorageProduct) => localStorageProduct.id !== product.id);
-      setLocalStorageProducts(newLocalStorageProducts);
-    } else {
-      const newLocalStorageProducts = [...localStorageProducts, product];
-      setLocalStorageProducts(newLocalStorageProducts);
-    }
-  };
-
-  const isInCart = (productId: string): boolean => {
-    return localStorageProducts.find((localStorageProduct: Game) => localStorageProduct.id === productId);
-  };
-
   return (
     <>
       {isLoading ? (
@@ -88,13 +71,13 @@ export default function Home() {
             <div className='flex justify-end pt-12'>
               <h3 className='font-bold'>GENRE</h3> <span className='px-4'>|</span>
               <div className='pl-2'>
-                <Filter defaultFilter={defaultFilter} updateFilter={setSelectedFilter} updatePage={setActualPage} selectOptions={availableFilters}></Filter>
+                <Filter defaultFilter={selectedFilter} updateFilter={setSelectedFilter} updatePage={setActualPage} selectOptions={availableFilters}></Filter>
               </div>
             </div>
           </div>
           <hr className='border-t border-gray-100' />
           <div className='px-5 lg:px-32 py-12'>
-            <ProductList products={products} displayType='grid' isInCart={isInCart} handleProductsCart={handleProductsCart}></ProductList>
+            <ProductList products={products} displayType='grid' localStorageProducts={localStorageProducts} setLocalStorageProducts={setLocalStorageProducts}></ProductList>
             {actualPage < totalPages && (
               <button onClick={seeMorePages} className='bg-zinc-600 hover:bg-zinc-700 font-bold rounded-md text-white px-6 py-4 mt-12'>
                 SEE MORE

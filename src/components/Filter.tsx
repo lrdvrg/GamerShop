@@ -18,9 +18,9 @@ const Filter = ({ updateFilter, updatePage, selectOptions, defaultFilter }: Prop
 
   return (
     <>
-      <select value={selectedFilter} onChange={handleSelect}>
+      <select value={selectedFilter.toLowerCase()} onChange={handleSelect}>
         <option value=''>All</option>
-        {selectOptions.map((value) => (
+        {selectOptions?.map((value) => (
           <option key={value} value={value.toLowerCase()}>
             {value}
           </option>
