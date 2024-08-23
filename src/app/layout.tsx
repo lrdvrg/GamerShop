@@ -1,14 +1,15 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Archivo } from 'next/font/google';
 import './globals.css';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import { Suspense } from 'react';
 
-const inter = Inter({ subsets: ['latin'] });
+const archivo = Archivo({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Apply Digital Test',
-  description: 'Frontend development test for Apply Digital',
+  title: 'GamerShop',
+  description: 'GamerShop ecommerce.',
 };
 
 export default function RootLayout({
@@ -18,10 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
+      <body className={archivo.className}>
         <div className='min-h-screen flex flex-col'>
           <Header></Header>
-          {children}
+          <Suspense>{children}</Suspense>
           <Footer></Footer>
         </div>
       </body>
